@@ -20,8 +20,11 @@
 
   <property name="behaviors">
      <element value="plone.app.content.interfaces.INameFromTitle" />
-     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
-   </property>
+     <element value="plone.app.dexterity.behaviors.metadata.IDublinCore" />
+     <element value="plone.app.dexterity.behaviors.metadata.IPublication"/>
+     <element value="plone.app.dexterity.behaviors.nextprevious.INextPreviousEnabled" />
+     <element value="plone.app.relationfield.behavior.IRelatedItems" />
+  </property>
 
   <!-- View information -->
   <property name="link_target"></property>
