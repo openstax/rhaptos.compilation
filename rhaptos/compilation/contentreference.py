@@ -27,20 +27,7 @@ class IContentReference(form.Schema, IImageScaleTraversable):
     """
     Reference to any content in the site.
     """
-    
-    # If you want a schema-defined interface, delete the form.model
-    # line below and delete the matching file in the models sub-directory.
-    # If you want a model-based interface, edit
-    # models/contentreference.xml to define the content type
-    # and add directives here as necessary.
-    
-    form.model("models/contentreference.xml")
 
-
-# Custom content-type class; objects created for this content type will
-# be instances of this class. Use this class to add content-type specific
-# methods and properties. Put methods that are mainly useful for rendering
-# in separate view classes.
 
 class ContentReference(dexterity.Item):
     grok.implements(IContentReference)
@@ -58,7 +45,7 @@ class ContentReference(dexterity.Item):
 # of this type by uncommenting the grok.name line below or by
 # changing the view class name and template filename to View / view.pt.
 
-class SampleView(grok.View):
+class View(grok.View):
     grok.context(IContentReference)
     grok.require('zope2.View')
     
