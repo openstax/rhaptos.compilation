@@ -55,3 +55,9 @@ class View(grok.View):
     grok.require('zope2.View')
     
     # grok.name('view')
+
+class TableOfContentsView(grok.View):
+    grok.context(ICompilation)
+    grok.require('zope2.View')
+    grok.name('rhaptos.compilation.table-of-contents')
+
