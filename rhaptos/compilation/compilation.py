@@ -27,14 +27,6 @@ class ICompilation(form.Schema, IImageScaleTraversable):
     """
     A compilation of content and other compilation objects.
     """
-    
-    # If you want a schema-defined interface, delete the form.model
-    # line below and delete the matching file in the models sub-directory.
-    # If you want a model-based interface, edit
-    # models/compilation.xml to define the content type
-    # and add directives here as necessary.
-    
-    form.model("models/compilation.xml")
 
 
 # Custom content-type class; objects created for this content type will
@@ -58,7 +50,7 @@ class Compilation(dexterity.Container):
 # of this type by uncommenting the grok.name line below or by
 # changing the view class name and template filename to View / view.pt.
 
-class SampleView(grok.View):
+class View(grok.View):
     grok.context(ICompilation)
     grok.require('zope2.View')
     
