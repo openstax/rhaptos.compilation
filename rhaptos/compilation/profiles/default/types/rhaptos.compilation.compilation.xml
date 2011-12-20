@@ -12,8 +12,8 @@
   <property name="global_allow">True</property>
   <property name="filter_content_types">False</property>  
   <property name="allowed_content_types">
-    <element value="rhaptos.compilation.compilation"/>
-    <element value="rhaptos.compilation.contentreference"/>
+     <element value="rhaptos.compilation.compilation"/>
+     <element value="rhaptos.compilation.contentreference"/>
   </property>
   <property name="allow_discussion">False</property>
 
@@ -26,7 +26,7 @@
      <element value="plone.app.dexterity.behaviors.metadata.IDublinCore" />
      <element value="plone.app.dexterity.behaviors.metadata.IPublication"/>
      <element value="plone.app.dexterity.behaviors.nextprevious.INextPreviousEnabled" />
-   </property>
+  </property>
 
   <!-- View information -->
   <property name="link_target"></property>
