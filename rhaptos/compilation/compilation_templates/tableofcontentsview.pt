@@ -24,28 +24,7 @@
 
         <div tal:replace="structure provider:plone.abovecontentbody" />
         
-        <tal:content-macro condition="nothing">
-            <metal:item-contents define-macro="item-contents">
-            <ul id="collapsibleDemo"> 
-                <li class="cnx_null_li">
-                    Content ref 1
-                </li> 
-                <li class="cnx_null_li">
-                    Content ref 2
-                </li> 
-            </ul> 
-            </metal:item-contents>
-        </tal:content-macro>
-
-        <div id="cnx_course_content">
-            <h3 id="toc_header">Table of Contents</h3>
-            <div id="cnx_course_navigation_contents">
-                <div id="course" path="/path/to/compilation"
-                    tal:attributes="path python:'/'.join(context.getPhysicalPath())">
-                    <span tal:replace="structure context/@@rhaptos.compilation.table-of-contents-helpers" />
-                </div>            
-            </div>
-        </div>
+        <span tal:replace="structure context/@@rhaptos.compilation.table-of-contents-helpers" />
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
 

@@ -18,6 +18,7 @@ from plone.app.textfield import RichText
 from z3c.relationfield.schema import RelationList, RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 
+from rhaptos.compilation.contentreference import IContentReference
 from rhaptos.compilation import MessageFactory as _
 
 
@@ -92,7 +93,18 @@ class TableOfContentsHelpers(grok.View):
         parent = context.aq_parent
         return not ICompilation.providedBy(parent)
 
-class TableOfContentsView(grok.View):
+    def getContentItems(self, container=None):
+        container = container or self.context
+        return container.getFolderContents(full_objects=True)
+
+    def isCompilation(self, item):
+        return ICompilation.providedBy(item)
+
+    def isContentReference(self, item):
+        return IContentReference.providedBy(item)
+
+
+class TableOfContentsView(TableOfContentsHelpers):
     """ Renders only one level of compilations and contentreferences.
     """
     grok.context(ICompilation)
