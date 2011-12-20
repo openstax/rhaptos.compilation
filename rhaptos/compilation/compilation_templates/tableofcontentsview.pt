@@ -1,1 +1,56 @@
-TOC 2
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="rhaptos.compilation">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+        tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
+
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+
+            <h1 class="documentFirstHeading" tal:content="string:Table of contents for: ${context/title}" />
+        
+        <div class="discreet">
+        </div>
+
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+        <p class="documentDescription" tal:content="context/description" />
+
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+        
+        <tal:content-macro condition="nothing">
+            <metal:item-contents define-macro="item-contents">
+            <ul id="collapsibleDemo"> 
+                <li class="cnx_null_li">
+                    Content ref 1
+                </li> 
+                <li class="cnx_null_li">
+                    Content ref 2
+                </li> 
+            </ul> 
+            </metal:item-contents>
+        </tal:content-macro>
+
+        <div id="cnx_course_content">
+            <h3 id="toc_header">Table of Contents</h3>
+            <div id="cnx_course_navigation_contents">
+                <div id="course" path="/path/to/compilation"
+                    tal:attributes="path python:'/'.join(context.getPhysicalPath())">
+                    <span tal:replace="structure context/@@rhaptos.compilation.table-of-contents-helpers" />
+                </div>            
+            </div>
+        </div>
+
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>

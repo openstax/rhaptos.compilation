@@ -1,0 +1,24 @@
+<script type="text/javascript" src="test.js" 
+    tal:attributes="src string:${view/static}/toc.js"></script>
+<script type="text/javascript" src="test.js" 
+    tal:attributes="src string:${view/static}/transMenus0_9_2.js"></script>
+
+<ul id="collapsibleDemo">
+    <tal:isroot condition="view/isroot">
+    <li class="cnx_null_li" tal:repeat="creference view/getContentReferences">
+        <span tal:content="creference/Title" />
+    </li>
+    </tal:isroot>
+    <li class="cnx_null_li" tal:repeat="compilation python:view.getCompilations()">
+        <img style="height: 9px; width: 9px; padding-right: 0px; margin-left: -13px;" src="rightArrow.gif" alt="toggle" />
+        <h4 class="cnx_chapter_header" onclick="org.archomai.transMenus.toc.ExpandMenuHeader(event);">
+            <span tal:content="compilation/Title" />
+        </h4>
+        <ul>
+            <li tal:repeat="creference python:view.getContentReferences(compilation)">
+                <span tal:content="creference/Title" />
+            </li>
+        </ul>
+        <span tal:replace="structure compilation/@@rhaptos.compilation.table-of-contents-helpers" />  
+    </li>
+</ul>
