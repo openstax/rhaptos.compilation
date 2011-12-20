@@ -1,7 +1,9 @@
-<script type="text/javascript" src="test.js" 
-    tal:attributes="src string:${view/static}/toc.js"></script>
+
+
 <script type="text/javascript" src="test.js" 
     tal:attributes="src string:${view/static}/transMenus0_9_2.js"></script>
+<script type="text/javascript" src="test.js" 
+    tal:attributes="src string:${view/static}/toc.js"></script>
 
 <ul id="collapsibleDemo">
     <tal:isroot condition="view/isroot">
@@ -10,11 +12,13 @@
     </li>
     </tal:isroot>
     <li class="cnx_null_li" tal:repeat="compilation python:view.getCompilations()">
-        <img style="height: 9px; width: 9px; padding-right: 0px; margin-left: -13px;" src="rightArrow.gif" alt="toggle" />
+        <img style="height: 9px; width: 9px; padding-right: 0px; margin-left: -13px;" 
+            src="rightArrow.gif" alt="right arrow" 
+            tal:attributes="src string:${view/static}/rightArrow.gif" />
         <h4 class="cnx_chapter_header" onclick="org.archomai.transMenus.toc.ExpandMenuHeader(event);">
-            <span tal:content="compilation/Title" />
+            <span tal:replace="compilation/Title" />
         </h4>
-        <ul>
+        <ul class="collapsibleMenu">
             <li tal:repeat="creference python:view.getContentReferences(compilation)">
                 <span tal:content="creference/Title" />
             </li>
