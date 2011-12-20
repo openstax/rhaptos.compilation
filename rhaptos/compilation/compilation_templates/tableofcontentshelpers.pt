@@ -1,5 +1,8 @@
+<link rel="stylesheet" type="text/css" media="screen" href="toc.css"
+    tal:attributes="href string:${view/static}/toc.css" />
+
 <script type="text/javascript" src="test.js" 
-tal:attributes="src string:${view/static}/transMenus0_9_2.js"></script>
+    tal:attributes="src string:${view/static}/transMenus0_9_2.js"></script>
 <script type="text/javascript" src="test.js" 
     tal:attributes="src string:${view/static}/toc.js"></script>
 
