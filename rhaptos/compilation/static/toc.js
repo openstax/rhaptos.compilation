@@ -9,12 +9,12 @@ org.archomai.transMenus.Persist.cookiename = "table_of_contents"
 // change the ToC twisty widget images to arrows
 org.archomai.transMenus.collapsibleMenuImages =
 {
-openImage : "/transmenus/downArrow.gif" ,
-            closedImage : "/transmenus/rightArrow.gif",
-            height : "9px",
-            width : "9px",
-            space : "0px",
-            moveLeft : "13px"
+    openImage : "++resource++rhaptos.compilation/downArrow.gif" ,
+    closedImage : "++resource++rhaptos.compilation/rightArrow.gif",
+    height : "9px",
+    width : "9px",
+    space : "0px",
+    moveLeft : "13px"
 }
 // new namespace for new stuff
 if (!org.archomai.transMenus.toc) {
