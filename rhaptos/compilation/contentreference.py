@@ -18,6 +18,7 @@ from plone.app.textfield import RichText
 from z3c.relationfield.schema import RelationList, RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 
+from rhaptos.compilation.interfaces import INavigableCompilation
 from rhaptos.compilation import MessageFactory as _
 
 
@@ -30,7 +31,7 @@ class IContentReference(form.Schema, IImageScaleTraversable):
 
 
 class ContentReference(dexterity.Item):
-    grok.implements(IContentReference)
+    grok.implements(IContentReference, INavigableCompilation)
     
     # Add your class methods and properties here
 

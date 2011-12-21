@@ -18,6 +18,7 @@ from plone.app.textfield import RichText
 from z3c.relationfield.schema import RelationList, RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 
+from rhaptos.compilation.interfaces import INavigableCompilation
 from rhaptos.compilation.contentreference import IContentReference
 from rhaptos.compilation import MessageFactory as _
 
@@ -36,7 +37,7 @@ class ICompilation(form.Schema, IImageScaleTraversable):
 # in separate view classes.
 
 class Compilation(dexterity.Container):
-    grok.implements(ICompilation)
+    grok.implements(ICompilation, INavigableCompilation)
     
     # Add your class methods and properties here
 
