@@ -15,6 +15,7 @@ from plone.namedfile.field import NamedBlobImage, NamedBlobFile
 
 from plone.app.textfield import RichText
 
+from plone.uuid.interfaces import IAttributeUUID 
 from z3c.relationfield.schema import RelationList, RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 
@@ -37,7 +38,7 @@ class ICompilation(form.Schema, IImageScaleTraversable):
 # in separate view classes.
 
 class Compilation(dexterity.Container):
-    grok.implements(ICompilation, INavigableCompilation)
+    grok.implements(ICompilation, INavigableCompilation, IAttributeUUID)
     
     # Add your class methods and properties here
 

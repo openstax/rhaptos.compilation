@@ -9,6 +9,7 @@ from zope.interface import invariant, Invalid
 
 from z3c.form import group, field
 
+from plone.uuid.interfaces import IAttributeUUID 
 from plone.namedfile.interfaces import IImageScaleTraversable
 from plone.namedfile.field import NamedImage, NamedFile
 from plone.namedfile.field import NamedBlobImage, NamedBlobFile
@@ -35,7 +36,7 @@ class ISection(form.Schema, IImageScaleTraversable):
 # in separate view classes.
 
 class Section(dexterity.Container):
-    grok.implements(ISection, INavigableCompilation)
+    grok.implements(ISection, INavigableCompilation, IAttributeUUID)
     
     # Add your class methods and properties here
 

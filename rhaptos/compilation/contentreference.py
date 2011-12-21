@@ -9,6 +9,8 @@ from zope.interface import invariant, Invalid
 
 from z3c.form import group, field
 
+from plone.indexer import indexer
+from plone.uuid.interfaces import IAttributeUUID 
 from plone.namedfile.interfaces import IImageScaleTraversable
 from plone.namedfile.field import NamedImage, NamedFile
 from plone.namedfile.field import NamedBlobImage, NamedBlobFile
@@ -21,6 +23,7 @@ from plone.formwidget.contenttree import ObjPathSourceBinder
 
 from rhaptos.xmlfile.xmlfile import IXMLFile
 from rhaptos.compilation.interfaces import INavigableCompilation
+from rhaptos.compilation.section import ISection
 from rhaptos.compilation import MessageFactory as _
 
 
@@ -36,9 +39,24 @@ class IContentReference(form.Schema, IImageScaleTraversable):
         )
     form.widget(relatedContent=ContentTreeFieldWidget)
 
+@indexer(IContentReference)
+def relatedContentUID(obj):
+    return obj.relatedContent.to_object.UID()
+grok.global_adapter(relatedContentUID, name="relatedContentUID")
+
+@indexer(IContentReference)
+def compilationUID(obj):
+    # sequence of imports causes error if we put this at the top of the module.
+    from rhaptos.compilation.compilation import ICompilation
+    previousparent = parent = obj.aq_parent
+    while ICompilation.providedBy(parent) or ISection.providedBy(parent):
+        previousparent = parent
+        parent = parent.aq_parent
+    return previousparent and previousparent.UID()
+grok.global_adapter(compilationUID, name="compilationUID")
 
 class ContentReference(dexterity.Item):
-    grok.implements(IContentReference, INavigableCompilation)
+    grok.implements(IContentReference, INavigableCompilation, IAttributeUUID)
     
     # Add your class methods and properties here
 
