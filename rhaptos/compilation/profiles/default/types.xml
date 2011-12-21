@@ -8,6 +8,7 @@
   -->
 <object name="portal_types" meta_type="Plone Types Tool">
   <!-- -*- extra stuff goes here -*- -->
+  <object name="rhaptos.compilation.section" meta_type="Dexterity FTI" />
   <object name="rhaptos.compilation.contentreference" meta_type="Dexterity FTI" />
   <object name="rhaptos.compilation.compilation" meta_type="Dexterity FTI" />
 </object>

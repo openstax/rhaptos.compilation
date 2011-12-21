@@ -16,18 +16,25 @@ from plone.namedfile.field import NamedBlobImage, NamedBlobFile
 from plone.app.textfield import RichText
 
 from z3c.relationfield.schema import RelationList, RelationChoice
+from plone.formwidget.contenttree import ContentTreeFieldWidget
 from plone.formwidget.contenttree import ObjPathSourceBinder
 
+from rhaptos.xmlfile.xmlfile import IXMLFile
 from rhaptos.compilation.interfaces import INavigableCompilation
 from rhaptos.compilation import MessageFactory as _
 
 
 # Interface class; used to define content-type schema.
-
 class IContentReference(form.Schema, IImageScaleTraversable):
     """
     Reference to any content in the site.
     """
+    relatedContent = RelationChoice(
+        title=_(u'label_related_content', default=u'Related content'),
+        source=ObjPathSourceBinder(object_provides=IXMLFile.__identifier__),
+        required=True,
+        )
+    form.widget(relatedContent=ContentTreeFieldWidget)
 
 
 class ContentReference(dexterity.Item):
