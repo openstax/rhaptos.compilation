@@ -36,7 +36,7 @@ class ISection(form.Schema, IImageScaleTraversable):
 # in separate view classes.
 
 class Section(dexterity.Container):
-    grok.implements(ISection, INavigableCompilation, IAttributeUUID)
+    grok.implements(ISection)
     
     # Add your class methods and properties here
 
