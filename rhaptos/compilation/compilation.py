@@ -1,63 +1,24 @@
 from five import grok
 from plone.directives import dexterity, form
-
-from zope import schema
-from zope.schema.interfaces import IContextSourceBinder
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-
-from zope.interface import invariant, Invalid
-
-from z3c.form import group, field
-
 from plone.namedfile.interfaces import IImageScaleTraversable
-from plone.namedfile.field import NamedImage, NamedFile
-from plone.namedfile.field import NamedBlobImage, NamedBlobFile
-
-from plone.app.textfield import RichText
-
-from plone.uuid.interfaces import IAttributeUUID 
-from z3c.relationfield.schema import RelationList, RelationChoice
-from plone.formwidget.contenttree import ObjPathSourceBinder
 
 from rhaptos.compilation.interfaces import INavigableCompilation
-from rhaptos.compilation.contentreference import IContentReference
 from rhaptos.compilation import MessageFactory as _
 
-
-# Interface class; used to define content-type schema.
 
 class ICompilation(form.Schema, IImageScaleTraversable):
     """
     A compilation of content and other compilation objects.
     """
 
-
-# Custom content-type class; objects created for this content type will
-# be instances of this class. Use this class to add content-type specific
-# methods and properties. Put methods that are mainly useful for rendering
-# in separate view classes.
-
 class Compilation(dexterity.Container):
-    grok.implements(ICompilation, INavigableCompilation, IAttributeUUID)
-    
-    # Add your class methods and properties here
+    grok.implements(ICompilation)
 
-
-# View class
-# The view will automatically use a similarly named template in
-# compilation_templates.
-# Template filenames should be all lower case.
-# The view will render when you request a content object with this
-# interface with "/@@sampleview" appended.
-# You may make this the default view for content objects
-# of this type by uncommenting the grok.name line below or by
-# changing the view class name and template filename to View / view.pt.
 
 class View(grok.View):
     grok.context(ICompilation)
     grok.require('zope2.View')
-    
-    # grok.name('view')
+
 
 class TableOfContentsHelpers(grok.View):
     """ Helper methods and a template that renders only the table of contents.
@@ -74,15 +35,15 @@ class TableOfContentsHelpers(grok.View):
         return content
 
     def getCompilations(self, container=None):
-        contentFilter = {'object_provides':
-                         'rhaptos.compilation.compilation.ICompilation'}
+        contentFilter = {'portal_type':
+                         'rhaptos.compilation.compilation'}
         container = container or self.context
         brains = container.getFolderContents(contentFilter)
         return [b.getObject() for b in brains] or []
 
     def getContentReferences(self, container=None):
-        contentFilter = {'object_provides':
-                         'rhaptos.compilation.contentreference.IContentReference'}
+        contentFilter = {'portal_type':
+                         'rhaptos.compilation.contentreference'}
         container = container or self.context
         brains = container.getFolderContents(contentFilter)
         return [b.getObject() for b in brains] or []
@@ -101,9 +62,6 @@ class TableOfContentsHelpers(grok.View):
 
     def isCompilation(self, item):
         return ICompilation.providedBy(item)
-
-    def isContentReference(self, item):
-        return IContentReference.providedBy(item)
 
 
 class TableOfContentsView(TableOfContentsHelpers):
