@@ -1,12 +1,27 @@
 <div id="navigation-viewlet-container"
     tal:define="isCompilation viewlet/isCompilation;
-                isContentReference viewlet/isContentReference;
-                currentItem nocall:context;">
+                isContentish viewlet/isContentish;
+                compilationuid request/compilationuid|nothing;">
+                
     <tal:compliationroot condition="isCompilation">
-    <span><a tal:attributes="href viewlet/getStartURL" href="#">Start</a></span>
+    <span tal:define="startURL viewlet/getStartURL;">
+        <a tal:attributes="href startURL" href="#" tal:condition="startURL">
+            Start
+        </a>
+    </span>
     </tal:compliationroot>
-    <tal:contentreference condition="isContentReference">
-    <span><a tal:attributes="href python:viewlet.getNextURL(currentItem)" href="#">Next</a></span>|
-    <span><a tal:attributes="href python:viewlet.getPreviousURL(currentItem)" href="#">Previous</a></span>
+
+    <tal:contentreference condition="python:isContentish and not isCompilation">
+    <span tal:define="nextURL viewlet/getNextURL;"
+        tal:condition="nextURL">
+        <a tal:attributes="href nextURL" href="#">Next</a>
+        &nbsp;|&nbsp;
+    </span>
+    <span tal:define="previousURL viewlet/getPreviousURL;"
+        tal:condition="previousURL">
+        <a tal:attributes="href previousURL" href="#">
+            Previous
+        </a>
+    </span>
     </tal:contentreference>
 </div>
