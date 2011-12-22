@@ -6,8 +6,10 @@ from Products.CMFCore.utils import getToolByName
 from plone.app.layout.nextprevious.interfaces import INextPreviousProvider
 from plone.uuid.interfaces import IUUID
 
+from rhaptos.xmlfile.xmlfile import IXMLFile
 from rhaptos.compilation.interfaces import INavigableCompilation
 from rhaptos.compilation.contentreference import IContentReference
+from rhaptos.compilation.section import ISection
 from rhaptos.compilation.compilation import ICompilation
 
 class NavigationViewlet(grok.Viewlet):
@@ -23,6 +25,16 @@ class NavigationViewlet(grok.Viewlet):
         self.referencedcontent = [b.getObject() for b in self.getContent()]
         self.ptool = getToolByName(self.context, 'portal_url')
         self.physicalRoot = self.ptool.getPhysicalRoot()
+        props = getToolByName(self.context, 'portal_properties').site_properties
+        self.vat = props.getProperty('typesUseViewActionInListings', ())
+
+    def getOrdering(self, context):
+        order = context.getOrdering()
+        if not isinstance(order, list):
+            order = order.idsInOrder()
+        if not isinstance(order, list):
+            order = None
+        return order
     
     def getUUID(self, obj):
         return IUUID(obj)
@@ -59,25 +71,81 @@ class NavigationViewlet(grok.Viewlet):
         currentItem = self.getCurrentItem()
         if not currentItem: return None
         
-        root = self.getRootCompilation(currentItem)
-        adapter = queryAdapter(root, INextPreviousProvider)
-        if adapter:
-            nextItem = adapter.getNextItem(currentItem)
-            if nextItem:
-                relatedcontent = self.getRelatedContent(nextItem)
+        context = currentItem.aq_parent
+        nextItem = self.getNextItem(context, currentItem)
+        if nextItem:
+            relatedcontent = self.getRelatedContent(nextItem)
+            if relatedcontent:
                 url = relatedcontent.to_path
                 return '%s?compilationuid=%s' %(url, self.getUUID(root))
+
+    def getNextItem(self, context, obj=None):
+        order = self.getOrdering(context)
+        if not order: return None
+        pos = 0
+        if obj:
+            pos = context.getObjectPosition(obj.getId())
+        # find the first object the provides IContentReference
+        offset = 1
+        data = None
+        for oid in order[pos+offset:]:
+            nextObj = context[oid]
+            if IContentReference.providedBy(nextObj):
+                data = self.getData(nextObj)
+            elif ISection.providedBy(nextObj):
+                data = self.getNextItem(nextObj)
+            elif ICompilation.providedBy(nextObj):
+                return None
+            if data:
+                return data
+        return None
+
+    def getPreviousItem(self, context, obj=None):
+        """  """
+        order = self.getOrdering(context)
+        if not order: return None
+        pos = len(context.objectIds()) or 0
+        order_reversed = list(reversed(order))
+        if obj:
+            pos = order_reversed.index(obj.getId())
+        data = None
+        for oid in order_reversed[pos+1:]:
+            nextObj = context[oid]
+            if IContentReference.providedBy(nextObj):
+                data = self.getData(nextObj)
+            elif ISection.providedBy(nextObj):
+                data = self.getNextItem(nextObj)
+            elif ICompilation.providedBy(nextObj):
+                return None
+            if data:
+                return data
+        return None
+        
+    def getData(self, obj):
+        """ return the expected mapping, see `INextPreviousProvider` """
+        if not self.security.checkPermission('View', obj):
+            return None
+        elif not IContentish.providedBy(obj):
+            # do not return a not contentish object
+            # such as a local workflow policy for example (#11234)
+            return None
+
+        ptype = obj.portal_type
+        url = obj.absolute_url()
+        if ptype in self.vat:       # "use view action in listings"
+            url += '/view'
+        return dict(id=obj.getId(), url=url, title=obj.Title(),
+            description=obj.Description(), portal_type=ptype)
 
     def getPreviousURL(self):
         currentItem = self.getCurrentItem()
         if not currentItem: return None
-
-        root = self.getRootCompilation(currentItem)
-        adapter = queryAdapter(root, INextPreviousProvider)
-        if adapter:
-            previousItem = adapter.getPreviousItem(currentItem)
-            if previousItem:
-                relatedcontent = self.getRelatedContent(previousItem)
+        
+        context = currentItem.aq_parent
+        previousItem = self.getPreviousItem(context, currentItem)
+        if previousItem:
+            relatedcontent = self.getRelatedContent(previousItem)
+            if relatedcontent:
                 url = relatedcontent.to_path
                 return '%s?compilationuid=%s' %(url, self.getUUID(root))
     
@@ -85,7 +153,9 @@ class NavigationViewlet(grok.Viewlet):
         rooturl = self.physicalRoot.absolute_url()
         url = item['url'].split(rooturl)[1]
         contentref = self.physicalRoot.restrictedTraverse(url)
-        return contentref.relatedContent
+        if hasattr(contentref, 'relatedContent'):
+            return contentref.relatedContent
+        return None
 
     def getContent(self):
         pc = getToolByName(self.context, 'portal_catalog')
@@ -106,3 +176,7 @@ class NavigationViewlet(grok.Viewlet):
     def isContentish(self, context=None):
         context = context or self.context
         return IContentish.providedBy(context)
+
+    def isXMLFile(self, context=None):
+        context = context or self.context
+        return IXMLFile.providedBy(context)

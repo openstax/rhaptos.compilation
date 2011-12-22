@@ -1,6 +1,6 @@
 <div id="navigation-viewlet-container"
     tal:define="isCompilation viewlet/isCompilation;
-                isContentish viewlet/isContentish;
+                isXMLFile viewlet/isXMLFile;
                 compilationuid request/compilationuid|nothing;">
                 
     <tal:compliationroot condition="isCompilation">
@@ -11,7 +11,7 @@
     </span>
     </tal:compliationroot>
 
-    <tal:contentreference condition="python:isContentish and not isCompilation">
+    <tal:contentreference condition="isXMLFile">
     <span tal:define="nextURL viewlet/getNextURL;"
         tal:condition="nextURL">
         <a tal:attributes="href nextURL" href="#">Next</a>
