@@ -3,6 +3,7 @@ from plone.directives import dexterity, form
 from plone.namedfile.interfaces import IImageScaleTraversable
 
 from rhaptos.compilation.interfaces import INavigableCompilation
+from rhaptos.compilation.section import ISection
 from rhaptos.compilation import MessageFactory as _
 
 
@@ -63,6 +64,8 @@ class TableOfContentsHelpers(grok.View):
     def isCompilation(self, item):
         return ICompilation.providedBy(item)
 
+    def isSection(self, item):
+        return ISection.providedBy(item)
 
 class TableOfContentsView(TableOfContentsHelpers):
     """ Renders only one level of compilations and contentreferences.

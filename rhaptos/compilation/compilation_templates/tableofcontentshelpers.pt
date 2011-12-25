@@ -12,22 +12,27 @@
         <div id="course" path="/path/to/compilation"
                          tal:attributes="path python:'/'.join(context.getPhysicalPath())">
             <ul id="collapsibleDemo"
-                tal:define="compilation nocall:context">
+                tal:define="toc_container nocall:context">
                 <metal:rendercompilations define-macro="render-compilations">              
-                <li class="cnx_null_li" tal:repeat="item python:view.getContentItems(compilation)">
+                <tal:items repeat="item python:view.getContentItems(toc_container)">
+                <li class="cnx_null_li" tal:define="is_section python:view.isSection(item)">
+                    <tal:section tal:condition="is_section">
                     <img style="height: 9px; width: 9px; padding-right: 0px; margin-left: -13px;" 
                         src="rightArrow.gif" alt="right arrow" 
                         tal:attributes="src string:${view/static}/rightArrow.gif" />
                     <h4 class="cnx_chapter_header" onclick="org.archomai.transMenus.toc.ExpandMenuHeader(event);">
                         <span tal:replace="item/Title">Title</span>
                     </h4>
-                    <tal:compilation condition="python:view.isCompilation(item)">
                     <ul class="collapsibleMenu"
-                        tal:define="compilation nocall:item">
+                        tal:define="toc_container nocall:item">
                         <span metal:use-macro="view/macros/render-compilations" />
                     </ul>
-                    </tal:compilation>
+                    </tal:section>
+                    <tal:contentref tal:condition="not:is_section">
+                    <a href="#" tal:content="item/Title">Title</a>
+                    </tal:contentref>
                 </li>
+                </tal:items>
                 </metal:rendercompilations>              
             </ul>
         </div>            
