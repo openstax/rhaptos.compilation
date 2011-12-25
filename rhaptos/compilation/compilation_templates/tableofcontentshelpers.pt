@@ -29,7 +29,7 @@
                     </ul>
                     </tal:section>
                     <tal:contentref tal:condition="not:is_section">
-                    <a href="#" tal:content="item/Title">Title</a>
+                    <a href="#" tal:attributes="href item/absolute_url" tal:content="item/Title">Title</a>
                     </tal:contentref>
                 </li>
                 </tal:items>
