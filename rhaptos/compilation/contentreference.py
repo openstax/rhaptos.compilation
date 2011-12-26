@@ -13,20 +13,28 @@ from rhaptos.compilation.compilation import ICompilation
 from rhaptos.compilation.section import ISection
 from rhaptos.compilation import MessageFactory as _
 
+class CompilationSourceBinder(ObjPathSource):
 
-class ConfigurableSourceBinder(ObjPathSourceBinder):
-    def __call__(self, context):
-        self.selectable_filter = self.getSelectableFilter(context)
-        return super(ConfigurableSourceBinder, self).path_source(
-            self._find_page_context(context),
-            selectable_filter=self.selectable_filter,
-            navigation_tree_query=self.navigation_tree_query)
+    def search(self, query, limit=20):
+        catalog_query = self.selectable_filter.criteria.copy()
+        catalog_query.update(parse_query(query, self.portal_path))
 
-    def getSelectableFilter(self, context):
-        ptool = getToolByName(context, 'portal_properties')
-        properties = ptool.get('configurablesourcebinder_properties')
-        interfaces = properties.getProperty('interfaces', ['IContentish'])
-        return CustomFilter(object_provides=interfaces)
+        if limit and 'sort_limit' not in catalog_query:
+            catalog_query['sort_limit'] = limit
+
+        try:
+            results = []
+            for brain in self.catalog(**catalog_query):
+                if brain.portal_type not in COMPILATION_TYPES:
+                    results.append(self.getTermByBrain(brain, real_value=False)
+        except ParseError:
+            return []
+
+        return results
+
+
+class CompilationSourceBinder(ObjPathSourceBinder):
+    path_source = CompilationPathSource
 
 class IContentReference(form.Schema, IImageScaleTraversable):
     """
@@ -34,7 +42,7 @@ class IContentReference(form.Schema, IImageScaleTraversable):
     """
     relatedContent = RelationChoice(
         title=_(u'label_related_content', default=u'Related content'),
-        source=ConfigurableSourceBinder(),
+        source=CompilationSourceBinder(),
         required=True,
         )
 
