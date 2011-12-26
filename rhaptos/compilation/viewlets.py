@@ -1,4 +1,5 @@
 from five import grok
+from collections import deque
 from zope.component import queryAdapter
 from plone.app.layout.viewlets.interfaces import IAboveContent
 from Products.CMFCore.interfaces import ISiteRoot, IContentish
@@ -22,29 +23,29 @@ class NavigationViewlet(grok.Viewlet):
     grok.viewletmanager(IAboveContent)
     
     def update(self):
-        self.referencedcontent = [b.getObject() for b in self.getContent()]
-        self.ptool = getToolByName(self.context, 'portal_url')
-        self.physicalRoot = self.ptool.getPhysicalRoot()
-        props = getToolByName(self.context, 'portal_properties').site_properties
-        self.vat = props.getProperty('typesUseViewActionInListings', ())
+        self.root = self.getCompilation()
+        self.contentrefs = self.getContentRefsFromTree(self.root)
+        self.currentItem = self.getCurrentItem()
 
-    def getOrdering(self, context):
-        order = context.getOrdering()
-        if not isinstance(order, list):
-            order = order.idsInOrder()
-        if not isinstance(order, list):
-            order = None
-        return order
-    
     def getUUID(self, obj):
         return IUUID(obj)
 
     def getStartURL(self):
-        root = self.getRootCompilation(self.context)
-        if self.referencedcontent:
-            obj = self.referencedcontent[0]
+        if self.contentrefs:
+            obj = self.contentrefs[0].getObject()
             url = obj.relatedContent.to_path
-            return '%s?compilationuid=%s' %(url, self.getUUID(root))
+            return '%s?compilationuid=%s' %(url, self.getUUID(self.root))
+
+    def getCompilation(self, request=None):
+        if ICompilation.providedBy(self.context): return self.context
+
+        request = request or self.request
+        compilationuid = request.get('compilationuid', None)
+        if compilationuid is None:
+            return
+        pc = getToolByName(self.context, 'portal_catalog')
+        brains = pc(UID=compilationuid)
+        return brains and brains[0].getObject() or None
     
     def getRootCompilation(self, context):
         while context:
@@ -68,95 +69,51 @@ class NavigationViewlet(grok.Viewlet):
         return brains and brains[0].getObject() or None
 
     def getNextURL(self):
-        currentItem = self.getCurrentItem()
-        if not currentItem: return None
+        if not self.currentItem: return None
         
-        context = currentItem.aq_parent
-        nextItem = self.getNextItem(context, currentItem)
+        nextItem = self.getNextItem(self.currentItem)
         if nextItem:
-            relatedcontent = self.getRelatedContent(nextItem)
+            relatedcontent = nextItem.relatedContent
             if relatedcontent:
                 url = relatedcontent.to_path
-                return '%s?compilationuid=%s' %(url, self.getUUID(root))
+                return '%s?compilationuid=%s' %(url, self.getUUID(self.root))
 
-    def getNextItem(self, context, obj=None):
-        order = self.getOrdering(context)
-        if not order: return None
-        pos = 0
-        if obj:
-            pos = context.getObjectPosition(obj.getId())
-        # find the first object the provides IContentReference
-        offset = 1
-        data = None
-        for oid in order[pos+offset:]:
-            nextObj = context[oid]
-            if IContentReference.providedBy(nextObj):
-                data = self.getData(nextObj)
-            elif ISection.providedBy(nextObj):
-                data = self.getNextItem(nextObj)
-            elif ICompilation.providedBy(nextObj):
-                return None
-            if data:
-                return data
-        return None
+    def getNextItem(self, currentItem):
+        for idx, brain in enumerate(self.contentrefs):
+            if brain.UID == IUUID(currentItem):
+                if len(self.contentrefs) >= idx + 1:
+                    return self.contentrefs[idx+1].getObject()
 
-    def getPreviousItem(self, context, obj=None):
+    def getContentRefsFromTree(self, root):
+        contentrefFilter = {'portal_type':'rhaptos.compilation.contentreference'}
+        sectionFilter = {'portal_type':'rhaptos.compilation.section'}
+        contentrefs = []
+        if root is None: return None
+        sections = deque([root,])
+        while len(sections) > 0:
+            item = sections.popleft()
+            contentrefs.extend(item.getFolderContents(contentFilter=contentrefFilter))
+            sections.extend(item.getFolderContents(
+                full_objects=True, contentFilter=sectionFilter))
+        return contentrefs 
+
+    def getPreviousItem(self, currentItem):
         """  """
-        order = self.getOrdering(context)
-        if not order: return None
-        pos = len(context.objectIds()) or 0
-        order_reversed = list(reversed(order))
-        if obj:
-            pos = order_reversed.index(obj.getId())
-        data = None
-        for oid in order_reversed[pos+1:]:
-            nextObj = context[oid]
-            if IContentReference.providedBy(nextObj):
-                data = self.getData(nextObj)
-            elif ISection.providedBy(nextObj):
-                data = self.getNextItem(nextObj)
-            elif ICompilation.providedBy(nextObj):
-                return None
-            if data:
-                return data
-        return None
-        
-    def getData(self, obj):
-        """ return the expected mapping, see `INextPreviousProvider` """
-        if not self.security.checkPermission('View', obj):
-            return None
-        elif not IContentish.providedBy(obj):
-            # do not return a not contentish object
-            # such as a local workflow policy for example (#11234)
-            return None
-
-        ptype = obj.portal_type
-        url = obj.absolute_url()
-        if ptype in self.vat:       # "use view action in listings"
-            url += '/view'
-        return dict(id=obj.getId(), url=url, title=obj.Title(),
-            description=obj.Description(), portal_type=ptype)
+        for idx, brain in enumerate(self.contentrefs):
+            if brain.UID == IUUID(currentItem):
+                if len(self.contentrefs) > 0:
+                    return self.contentrefs[idx-1].getObject()
 
     def getPreviousURL(self):
-        currentItem = self.getCurrentItem()
-        if not currentItem: return None
+        if not self.currentItem: return None
         
-        context = currentItem.aq_parent
-        previousItem = self.getPreviousItem(context, currentItem)
+        previousItem = self.getPreviousItem(self.currentItem)
         if previousItem:
-            relatedcontent = self.getRelatedContent(previousItem)
+            relatedcontent = previousItem.relatedContent
             if relatedcontent:
                 url = relatedcontent.to_path
-                return '%s?compilationuid=%s' %(url, self.getUUID(root))
+                return '%s?compilationuid=%s' %(url, self.getUUID(self.root))
     
-    def getRelatedContent(self, item):
-        rooturl = self.physicalRoot.absolute_url()
-        url = item['url'].split(rooturl)[1]
-        contentref = self.physicalRoot.restrictedTraverse(url)
-        if hasattr(contentref, 'relatedContent'):
-            return contentref.relatedContent
-        return None
-
     def getContent(self):
         pc = getToolByName(self.context, 'portal_catalog')
         #'path': '/'.join(self.context.getPhysicalPath())

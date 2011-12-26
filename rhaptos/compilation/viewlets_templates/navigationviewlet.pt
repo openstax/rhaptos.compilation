@@ -11,7 +11,7 @@
     </span>
     </tal:compliationroot>
 
-    <tal:contentreference condition="isXMLFile">
+    <tal:contentreference condition="not:isCompilation">
     <span tal:define="nextURL viewlet/getNextURL;"
         tal:condition="nextURL">
         <a tal:attributes="href nextURL" href="#">Next</a>
