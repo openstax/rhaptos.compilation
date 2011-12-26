@@ -163,7 +163,17 @@ class TestNavigationViewlet(CompilationBaseTestCase):
         self.assertEqual(nexturl, refurl)
 
     def test_NextItem(self):
-        pass
+        import pdb;pdb.set_trace()
+        currentfile = self.portal.file0
+        navviewlet = NavigationViewlet(
+            currentfile,
+            {'compilationuid': IUUID(self.compilation)},
+            {},
+            None) 
+        navviewlet.update()
+        currentItem = navviewlet.getCurrentItem()
+        nextContentRef = self.compilation.section002.contentref1
+        self.assertEqual(nextContentRef, navviewlet.getNextItem(currentItem))
 
     def test_getContentRefsFromTree(self):
         pass
