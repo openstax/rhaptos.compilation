@@ -24,8 +24,8 @@ class TestMarshal(unittest.TestCase):
 
     def test_compiliationsourcebinder(self):
         sourcebinder = CompilationSourceBinder(
-            object_provides='Products.CMFCore.interfaces.IContentish'
+            object_provides='Products.CMFCore.interfaces._content.IContentish'
         )
         self.portal.invokeFactory('Document', 'd1', title=u"Document 1")
-        results = sourcebinder(self.portal).search('path:/portal')
+        results = sourcebinder(self.portal).search('')
         self.assertTrue(len(results)==1)

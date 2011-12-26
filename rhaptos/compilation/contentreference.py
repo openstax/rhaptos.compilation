@@ -45,7 +45,7 @@ class IContentReference(form.Schema, IImageScaleTraversable):
     relatedContent = RelationChoice(
         title=_(u'label_related_content', default=u'Related content'),
         source=CompilationSourceBinder(
-            object_provides='Products.CMFCore.interfaces.IContentish'),
+            object_provides='Products.CMFCore.interfaces._content.IContentish'),
         required=True,
         )
 
