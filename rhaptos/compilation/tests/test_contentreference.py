@@ -175,19 +175,67 @@ class TestNavigationViewlet(CompilationBaseTestCase):
         self.assertEqual(nextContentRef, navviewlet.getNextItem(currentItem))
 
     def test_getContentRefsFromTree(self):
+        """ We use 2 sets to assert equality since we are not interested in sequence but
+            rather content.
+        """
         query = {'portal_type': 'rhaptos.compilation.contentreference'}
         brains = self.portal.portal_catalog(query)
         s1=set([b.getObject() for b in brains])
         s2=set([b.getObject() for b in self.navviewlet.getContentRefsFromTree(self.compilation)])
         self.assertEqual(s1,s2)
 
-    def test_getPreviousItem(self):
-        pass
+    def test_getPreviousItem_startFromFirstFile(self):
+        currentfile = self.portal.file0
+        navviewlet = NavigationViewlet(
+            currentfile,
+            {'compilationuid': IUUID(self.compilation)},
+            {},
+            None) 
+        navviewlet.update()
+        currentItem = navviewlet.getCurrentItem()
+        self.assertEqual(navviewlet.getPreviousItem(currentItem), None)
 
-    def test_getPreviousURL(self):
-        pass
+    def test_getPreviousURL_startFromFirstFile(self):
+        currentfile = self.portal.file0
+        navviewlet = NavigationViewlet(
+            currentfile,
+            {'compilationuid': IUUID(self.compilation)},
+            {},
+            None) 
+        navviewlet.update()
+        self.assertEqual(navviewlet.getPreviousURL(), None)
+
+    def test_getPreviousItem_startFromSecondFile(self):
+        currentfile = self.portal.file1
+        navviewlet = NavigationViewlet(
+            currentfile,
+            {'compilationuid': IUUID(self.compilation)},
+            {},
+            None) 
+        navviewlet.update()
+        currentItem = navviewlet.getCurrentItem()
+        prevItem = self.compilation.section001.contentref0
+        self.assertEqual(navviewlet.getPreviousItem(currentItem), prevItem)
+
+    def test_getPreviousURL_startFromSecondFile(self):
+        currentfile = self.portal.file1
+        navviewlet = NavigationViewlet(
+            currentfile,
+            {'compilationuid': IUUID(self.compilation)},
+            {},
+            None) 
+        navviewlet.update()
+        currentItem = navviewlet.getCurrentItem()
+        prevURL = navviewlet.getPreviousURL()
+        #/plone/file0?compilationuid=3b5cf1f3-10c1-4c29-a94c-53a915215262
+        prevfile = self.portal.file0
+        refurl = '%s?compilationuid=%s' % \
+            ('/'.join(prevfile.getPhysicalPath()), IUUID(self.compilation))
+        self.assertEqual(prevURL, refurl)
 
     def test_getContent(self):
+        """ Simple utility method; no need to test.
+        """
         pass
 
     def test_isContentReference(self):
