@@ -20,7 +20,6 @@
 
     <h2>Table of contents</h2>
 
-
     <div tal:content="context/Title">Title inserted here</div>
     
   </metal:content-core>
