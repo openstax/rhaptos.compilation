@@ -47,11 +47,6 @@ class NavigationViewlet(grok.Viewlet):
         brains = pc(UID=compilationuid)
         return brains and brains[0].getObject() or None
     
-    def getRootCompilation(self, context):
-        while context:
-            if ICompilation.providedBy(context): return context
-            context = context.aq_parent
-    
     def getCurrentItem(self):
         if IContentReference.providedBy(self.context):
             return self.context
