@@ -19,7 +19,7 @@
        in Plone -->
   <genericsetup:registerProfile
       name="default"
-      title="Rhaptos Compilation"
+      title="rhaptos.compilation"
       directory="profiles/default"
       description="Extension profile for Rhaptos Compilation"
       provides="Products.GenericSetup.interfaces.EXTENSION"
