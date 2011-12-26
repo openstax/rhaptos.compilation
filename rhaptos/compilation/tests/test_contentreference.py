@@ -163,7 +163,6 @@ class TestNavigationViewlet(CompilationBaseTestCase):
         self.assertEqual(nexturl, refurl)
 
     def test_NextItem(self):
-        import pdb;pdb.set_trace()
         currentfile = self.portal.file0
         navviewlet = NavigationViewlet(
             currentfile,
@@ -176,7 +175,11 @@ class TestNavigationViewlet(CompilationBaseTestCase):
         self.assertEqual(nextContentRef, navviewlet.getNextItem(currentItem))
 
     def test_getContentRefsFromTree(self):
-        pass
+        query = {'portal_type': 'rhaptos.compilation.contentreference'}
+        brains = self.portal.portal_catalog(query)
+        s1=set([b.getObject() for b in brains])
+        s2=set([b.getObject() for b in self.navviewlet.getContentRefsFromTree(self.compilation)])
+        self.assertEqual(s1,s2)
 
     def test_getPreviousItem(self):
         pass
