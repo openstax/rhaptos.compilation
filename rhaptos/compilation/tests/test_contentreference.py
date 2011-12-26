@@ -1,23 +1,27 @@
 import os
 import unittest2 as unittest
 
+from plone.uuid.interfaces import IUUID
 from zope.component import createObject
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 
+from z3c.relationfield.relation import create_relation
 from Products.CMFCore.utils import getToolByName
 
 from rhaptos.compilation.contentreference import CompilationSourceBinder
 from rhaptos.compilation.compilation import TableOfContentsHelpers, ICompilation
 from rhaptos.compilation.section import ISection 
+from rhaptos.compilation.viewlets import NavigationViewlet
 
 from base import PROJECTNAME
 from base import INTEGRATION_TESTING
 
 dirname = os.path.dirname(__file__)
 
-class TestCompilationSourceBinder(unittest.TestCase):
-    """ Test compilation source binder """
+class CompilationBaseTestCase(unittest.TestCase):
+    """ Basic methods for all other compilation tests """
+
     layer = INTEGRATION_TESTING
 
     def _createSections(self):
@@ -43,11 +47,14 @@ class TestCompilationSourceBinder(unittest.TestCase):
                 'File',
                 'file%s' %number,
                 title=u'File %s' %number)
-            section.invokeFactory(
+            file = self.portal._getOb(id)
+            id = section.invokeFactory(
                 'rhaptos.compilation.contentreference',
                 'contentref%s' %number,
-                title=u"Content reference %s" %number,
-                relatedContent = self.portal._getOb(id))
+                title=u"Content reference %s" %number)
+            contentref = section._getOb(id)
+            relation = create_relation(file.getPhysicalPath())
+            contentref.relatedContent = relation
 
     def setUp(self):
         self.portal = self.layer['portal']
@@ -55,6 +62,10 @@ class TestCompilationSourceBinder(unittest.TestCase):
         sections = self._createSections()
         self._createContentRefs(sections)
         self.portal.invokeFactory('Document', 'd1', title=u"Document 1")
+
+
+class TestCompilationSourceBinder(CompilationBaseTestCase):
+    """ Test compilation source binder """
 
     def test_compilationsourcebinder(self):
         sourcebinder = CompilationSourceBinder(
@@ -69,7 +80,7 @@ class TestCompilationSourceBinder(unittest.TestCase):
         self.assertTrue(len(results)==4)
 
 
-class TestTOCHelpers(TestCompilationSourceBinder):
+class TestTOCHelpers(CompilationBaseTestCase):
     """ Test compilation TOC helpers """
     layer = INTEGRATION_TESTING
 
@@ -89,3 +100,77 @@ class TestTOCHelpers(TestCompilationSourceBinder):
         items = tochelper.getContentItems()
         for item in items:
             self.assertTrue(ISection.providedBy(item))
+
+
+class TestReferenceContent(CompilationBaseTestCase):
+    
+    def test_relatedContentUID(self):
+        pass
+
+    def test_compilationUID(self):
+        pass
+
+
+class TestNavigationViewlet(CompilationBaseTestCase):
+    
+    def setUp(self):
+        super(TestNavigationViewlet, self).setUp()
+        self.compilation = self.portal._getOb('compilation001')
+        self.navviewlet = NavigationViewlet(self.compilation, {}, {}, None) 
+        self.navviewlet.update()
+
+    def test_update(self):
+        """ Probably don't need testing as each of the methods called here
+            get tested on their own.
+        """
+        pass
+
+    def test_getUUID(self):
+        """ Simple utility method; no need to test.
+        """
+        pass
+
+    def test_getStartURL(self):
+        starturl = self.navviewlet.getStartURL()
+        reference_url = '%s/file0?compilationuid=%s' % \
+            ('/'.join(self.portal.getPhysicalPath()), IUUID(self.compilation))
+        self.assertEqual(starturl, reference_url)
+
+    def test_getCompilation(self):
+        self.assertEqual(self.navviewlet.getCompilation(), self.compilation)
+
+    def test_RootCompilation(self):
+        pass
+
+    def test_getCurrentItem(self):
+        pass
+
+    def test_getNextURL(self):
+        pass
+
+    def test_NextItem(self):
+        pass
+
+    def test_getContentRefsFromTree(self):
+        pass
+
+    def test_getPreviousItem(self):
+        pass
+
+    def test_getPreviousURL(self):
+        pass
+
+    def test_getContent(self):
+        pass
+
+    def test_getCompilation(self):
+        pass
+
+    def test_isContentReference(self):
+        pass
+
+    def test_isContentish(self):
+        pass
+
+    def test_isXMLFile(self):
+        pass

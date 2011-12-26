@@ -81,14 +81,14 @@ class NavigationViewlet(grok.Viewlet):
     def getNextItem(self, currentItem):
         for idx, brain in enumerate(self.contentrefs):
             if brain.UID == IUUID(currentItem):
-                if len(self.contentrefs) >= idx + 1:
+                if len(self.contentrefs) > idx+1:
                     return self.contentrefs[idx+1].getObject()
 
     def getContentRefsFromTree(self, root):
         contentrefFilter = {'portal_type':'rhaptos.compilation.contentreference'}
         sectionFilter = {'portal_type':'rhaptos.compilation.section'}
         contentrefs = []
-        if root is None: return None
+        if root is None: return contentrefs
         sections = deque([root,])
         while len(sections) > 0:
             item = sections.popleft()
@@ -101,7 +101,7 @@ class NavigationViewlet(grok.Viewlet):
         """  """
         for idx, brain in enumerate(self.contentrefs):
             if brain.UID == IUUID(currentItem):
-                if len(self.contentrefs) > 0:
+                if len(self.contentrefs) > idx-1 > -1:
                     return self.contentrefs[idx-1].getObject()
 
     def getPreviousURL(self):
