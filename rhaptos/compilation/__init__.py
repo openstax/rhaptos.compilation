@@ -4,7 +4,7 @@ from zope.i18nmessageid import MessageFactory
 MessageFactory = MessageFactory('rhaptos.compilation')
 
 COMPILATION_TYPES = [
-    'rhaptos.compiliation.compiliation',
-    'rhaptos.compiliation.contentreference',
-    'rhaptos.compiliation.section',
+    'rhaptos.compilation.compilation',
+    'rhaptos.compilation.contentreference',
+    'rhaptos.compilation.section',
 ]
