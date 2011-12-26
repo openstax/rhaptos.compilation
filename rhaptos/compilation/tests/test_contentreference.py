@@ -27,5 +27,12 @@ class TestMarshal(unittest.TestCase):
             object_provides='Products.CMFCore.interfaces._content.IContentish'
         )
         self.portal.invokeFactory('Document', 'd1', title=u"Document 1")
+        self.portal.invokeFactory('rhaptos.compilation.compilation',
+            'c1', title=u"Compilation 1")
+
+        # make sure the compiliation both objects are catalogued
+        self.assertTrue(len(self.portal.portal_catalog())==2)
+
+        # compiliation must be exclude from the source binder results
         results = sourcebinder(self.portal).search('')
         self.assertTrue(len(results)==1)
