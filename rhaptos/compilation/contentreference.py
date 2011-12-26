@@ -5,15 +5,17 @@ from plone.indexer import indexer
 from plone.namedfile.interfaces import IImageScaleTraversable
 from z3c.relationfield.schema import RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
-from plone.formwidget.contenttree.source import CustomFilter
+from plone.formwidget.contenttree.source import CustomFilter, ObjPathSource
+from plone.app.vocabularies.catalog import parse_query
 from plone.uuid.interfaces import IUUID
 
 from rhaptos.xmlfile.xmlfile import IXMLFile
 from rhaptos.compilation.compilation import ICompilation
 from rhaptos.compilation.section import ISection
 from rhaptos.compilation import MessageFactory as _
+from rhaptos.compilation import COMPILATION_TYPES
 
-class CompilationSourceBinder(ObjPathSource):
+class CompilationPathSource(ObjPathSource):
 
     def search(self, query, limit=20):
         catalog_query = self.selectable_filter.criteria.copy()
@@ -26,7 +28,7 @@ class CompilationSourceBinder(ObjPathSource):
             results = []
             for brain in self.catalog(**catalog_query):
                 if brain.portal_type not in COMPILATION_TYPES:
-                    results.append(self.getTermByBrain(brain, real_value=False)
+                    results.append(self.getTermByBrain(brain, real_value=False))
         except ParseError:
             return []
 
@@ -42,7 +44,8 @@ class IContentReference(form.Schema, IImageScaleTraversable):
     """
     relatedContent = RelationChoice(
         title=_(u'label_related_content', default=u'Related content'),
-        source=CompilationSourceBinder(),
+        source=CompilationSourceBinder(
+            object_provides='Products.CMFCore.interfaces.IContentish'),
         required=True,
         )
 
