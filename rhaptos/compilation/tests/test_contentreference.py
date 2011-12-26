@@ -22,7 +22,7 @@ class TestMarshal(unittest.TestCase):
         self.portal = self.layer['portal']
         setRoles(self.portal, TEST_USER_ID, ['Manager'])
 
-    def test_compiliationsourcebinder(self):
+    def test_compilationsourcebinder(self):
         sourcebinder = CompilationSourceBinder(
             object_provides='Products.CMFCore.interfaces._content.IContentish'
         )
@@ -30,9 +30,9 @@ class TestMarshal(unittest.TestCase):
         self.portal.invokeFactory('rhaptos.compilation.compilation',
             'c1', title=u"Compilation 1")
 
-        # make sure the compiliation both objects are catalogued
+        # make sure both objects are catalogued
         self.assertTrue(len(self.portal.portal_catalog())==2)
 
-        # compiliation must be exclude from the source binder results
+        # compilation must be exclude from the source binder results
         results = sourcebinder(self.portal).search('')
         self.assertTrue(len(results)==1)
