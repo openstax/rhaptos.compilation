@@ -55,6 +55,7 @@ class CompilationBaseTestCase(unittest.TestCase):
             contentref = section._getOb(id)
             relation = create_relation(file.getPhysicalPath())
             contentref.relatedContent = relation
+            contentref.reindexObject(idxs=['compilationUID', 'relatedContentUID'])
 
     def setUp(self):
         self.portal = self.layer['portal']
@@ -132,21 +133,34 @@ class TestNavigationViewlet(CompilationBaseTestCase):
 
     def test_getStartURL(self):
         starturl = self.navviewlet.getStartURL()
-        reference_url = '%s/file0?compilationuid=%s' % \
+        refUrl = '%s/file0?compilationuid=%s' % \
             ('/'.join(self.portal.getPhysicalPath()), IUUID(self.compilation))
-        self.assertEqual(starturl, reference_url)
+        self.assertEqual(starturl, refUrl)
 
     def test_getCompilation(self):
         self.assertEqual(self.navviewlet.getCompilation(), self.compilation)
 
-    def test_RootCompilation(self):
-        pass
-
     def test_getCurrentItem(self):
         pass
 
+    def test_getNextURL_emptyrequest(self):
+        nexturl = self.navviewlet.getNextURL()
+        self.assertEqual(nexturl, None)
+
     def test_getNextURL(self):
-        pass
+        currentfile = self.portal.file0
+        navviewlet = NavigationViewlet(
+            currentfile,
+            {'compilationuid': IUUID(self.compilation)},
+            {},
+            None) 
+        navviewlet.update()
+        nexturl = navviewlet.getNextURL()
+        #/plone/file1?compilationuid=3b5cf1f3-10c1-4c29-a94c-53a915215262
+        nextfile = self.portal.file1
+        refurl = '%s?compilationuid=%s' % \
+            ('/'.join(nextfile.getPhysicalPath()), IUUID(self.compilation))
+        self.assertEqual(nexturl, refurl)
 
     def test_NextItem(self):
         pass
@@ -163,14 +177,17 @@ class TestNavigationViewlet(CompilationBaseTestCase):
     def test_getContent(self):
         pass
 
-    def test_getCompilation(self):
-        pass
-
     def test_isContentReference(self):
+        """ Simple utility method; no need to test.
+        """
         pass
 
     def test_isContentish(self):
+        """ Simple utility method; no need to test.
+        """
         pass
 
     def test_isXMLFile(self):
+        """ Simple utility method; no need to test.
+        """
         pass
