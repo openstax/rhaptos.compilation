@@ -1,11 +1,11 @@
 from five import grok
-from Products.CMFCore.utils import getToolByName
 from plone.directives import dexterity, form
 from plone.indexer import indexer
 from plone.namedfile.interfaces import IImageScaleTraversable
+from zope import schema
 from z3c.relationfield.schema import RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
-from plone.formwidget.contenttree.source import CustomFilter, ObjPathSource
+from plone.formwidget.contenttree.source import ObjPathSource
 from plone.app.vocabularies.catalog import parse_query
 from plone.uuid.interfaces import IUUID
 
@@ -42,6 +42,11 @@ class IContentReference(form.Schema, IImageScaleTraversable):
     """
     Reference to any content in the site.
     """
+    alternateTitle = schema.TextLine(
+        title=_(u'Alternate title'),
+        required=False,
+        )
+
     relatedContent = RelationChoice(
         title=_(u'label_related_content', default=u'Related content'),
         source=CompilationSourceBinder(
@@ -68,3 +73,10 @@ grok.global_adapter(compilationUID, name="compilationUID")
 
 class ContentReference(dexterity.Item):
     grok.implements(IContentReference)
+    
+    @property
+    def title(self):
+        return self.alternateTitle or self.relatedContent.to_object.Title()
+
+    def setTitle(self, title):
+        return
