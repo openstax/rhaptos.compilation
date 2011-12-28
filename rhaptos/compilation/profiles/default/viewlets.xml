@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <object>
-  <order manager="plone.abovecontent" skinname="*">
+  <order manager="plone.belowcontent" skinname="*">
     <viewlet name="rhaptos.compilation.navigation-viewlet" insert-before="*"/>
   </order>
 </object>

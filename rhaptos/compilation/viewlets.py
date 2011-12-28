@@ -1,7 +1,7 @@
 from five import grok
 from collections import deque
 from zope.component import queryAdapter
-from plone.app.layout.viewlets.interfaces import IAboveContent
+from plone.app.layout.viewlets.interfaces import IBelowContent
 from Products.CMFCore.interfaces import ISiteRoot, IContentish
 from Products.CMFCore.utils import getToolByName
 from plone.app.layout.nextprevious.interfaces import INextPreviousProvider
@@ -20,7 +20,7 @@ class NavigationViewlet(grok.Viewlet):
     grok.name('rhaptos.compilation.navigation-viewlet')
     grok.context(IContentish)
     grok.require('zope2.View')
-    grok.viewletmanager(IAboveContent)
+    grok.viewletmanager(IBelowContent)
     
     def update(self):
         self.root = self.getCompilation()
