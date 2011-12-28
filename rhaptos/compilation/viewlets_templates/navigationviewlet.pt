@@ -1,4 +1,4 @@
-<div id="navigation-viewlet-container"
+<div class="listingBar" id="navigation-viewlet-container"
     tal:define="isCompilation viewlet/isCompilation;
                 isXMLFile viewlet/isXMLFile;
                 compilationuid request/compilationuid|nothing;">
@@ -15,7 +15,6 @@
     <span tal:define="nextURL viewlet/getNextURL;"
         tal:condition="nextURL">
         <a tal:attributes="href nextURL" href="#">Next</a>
-        &nbsp;|&nbsp;
     </span>
     <span tal:define="previousURL viewlet/getPreviousURL;"
         tal:condition="previousURL">
