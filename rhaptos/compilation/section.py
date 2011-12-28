@@ -14,8 +14,3 @@ class ISection(form.Schema, IImageScaleTraversable):
 
 class Section(dexterity.Container):
     grok.implements(ISection)
-    
-
-class View(grok.View):
-    grok.context(ISection)
-    grok.require('zope2.View')
