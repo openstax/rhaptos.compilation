@@ -68,9 +68,3 @@ grok.global_adapter(compilationUID, name="compilationUID")
 
 class ContentReference(dexterity.Item):
     grok.implements(IContentReference)
-
-
-class View(grok.View):
-    grok.context(IContentReference)
-    grok.require('zope2.View')
-
