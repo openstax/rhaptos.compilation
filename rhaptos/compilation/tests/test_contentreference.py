@@ -106,9 +106,13 @@ class TestTOCHelpers(CompilationBaseTestCase):
 class TestReferenceContent(CompilationBaseTestCase):
     
     def test_relatedContentUID(self):
+        """ Simple utility method; no need to test.
+        """
         pass
 
     def test_compilationUID(self):
+        """ Simple utility method; no need to test.
+        """
         pass
 
 
@@ -225,7 +229,6 @@ class TestNavigationViewlet(CompilationBaseTestCase):
             {},
             None) 
         navviewlet.update()
-        currentItem = navviewlet.getCurrentItem()
         prevURL = navviewlet.getPreviousURL()
         #/plone/file0?compilationuid=3b5cf1f3-10c1-4c29-a94c-53a915215262
         prevfile = self.portal.file0
