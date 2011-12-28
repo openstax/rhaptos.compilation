@@ -79,4 +79,7 @@ class ContentReference(dexterity.Item):
         return self.alternateTitle or self.relatedContent.to_object.Title()
 
     def setTitle(self, title):
+        """ We do this because we have a computed title already, but dexterity's
+            machinery insists on setting the title via this method.
+        """
         return
