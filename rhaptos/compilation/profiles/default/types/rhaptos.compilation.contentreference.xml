@@ -4,7 +4,7 @@
    i18n:domain="rhaptos.compilation" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Basic metadata -->
-  <property name="title" i18n:translate="">ContentReference</property>
+  <property name="title" i18n:translate="">Content Reference</property>
   <property name="description"
     i18n:translate="">Reference to any content in the site.</property>
   <property name="icon_expr">string:${portal_url}/document_icon.png</property>
